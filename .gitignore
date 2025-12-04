@@ -1,0 +1,7 @@
+dataset/
+data/
+images/
+*.zip
+*.mp4
+*.jpg
+*.png
