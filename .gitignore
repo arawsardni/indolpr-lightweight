@@ -1,0 +1,13 @@
+# === Dataset ===
+datasets/preprocessed/
+
+# === YOLO training outputs ===
+results/
+models/
+
+# === Jupyter ===
+.ipynb_checkpoints/
+
+# === Python ===
+__pycache__/
+*.pyc
