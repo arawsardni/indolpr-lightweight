@@ -1,9 +1,9 @@
-# === Dataset ===
-datasets/preprocessed/
+# # === Dataset ===
+# datasets/preprocessed/
 
-# === YOLO training outputs ===
-results/
-models/
+# # === YOLO training outputs ===
+# results/
+# models/
 
 # === Jupyter ===
 .ipynb_checkpoints/

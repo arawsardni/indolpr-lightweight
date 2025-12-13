@@ -11,11 +11,11 @@ DATASET_DIR = os.path.join(BASE_DIR, "datasets", "IndonesianLiscenePlateDataset"
 IMAGES_DIR = os.path.join(DATASET_DIR, "dataset")
 LABEL_FILE = os.path.join(DATASET_DIR, "label.csv")
 
-OUTPUT_DIR = os.path.join(BASE_DIR, "datasets", "plate_text_cropped")
+OUTPUT_DIR = os.path.join(BASE_DIR, "datasets", "preprocessed", "plate_text_cropped")
 OUTPUT_IMAGES_DIR = os.path.join(OUTPUT_DIR, "dataset")
 OUTPUT_LABEL_FILE = os.path.join(OUTPUT_DIR, "label.csv")
 
-MODEL_PATH = os.path.join(BASE_DIR, "results", "detection", "yolo11_lpr", "baseline_run7", "weights", "best.pt")
+MODEL_PATH = os.path.join(BASE_DIR, "artifacts", "yolo", "best.pt")
 
 def preprocess_dataset():
     # Load Model
@@ -41,43 +41,49 @@ def preprocess_dataset():
         if not os.path.exists(img_path):
             continue
             
-        # Run Inference
-        results = model(img_path, verbose=False)
-        
-        cropped_img = None
-        
-        # Get highest confidence box
-        best_conf = -1
-        best_box = None
-        
-        for r in results:
-            boxes = r.boxes
-            for box in boxes:
-                conf = float(box.conf[0])
-                if conf > best_conf:
-                    best_conf = conf
-                    best_box = box.xyxy[0].cpu().numpy() # [x1, y1, x2, y2]
-        
-        original_img = cv2.imread(img_path)
-        
-        if best_box is not None:
-            x1, y1, x2, y2 = map(int, best_box)
-            # Clip to image bounds
+        # Custom Logic for Distorted/CCTV images (starting with digit)
+        if filename[0].isdigit():
+            original_img = cv2.imread(img_path)
             h, w = original_img.shape[:2]
-            x1 = max(0, x1)
-            y1 = max(0, y1)
-            x2 = min(w, x2)
-            y2 = min(h, y2)
-            
-            # Crop
-            cropped_img = original_img[y1:y2, x1:x2]
-            
-            # Fallback if crop is empty
-            if cropped_img.size == 0:
-                cropped_img = original_img
+            # Crop top half
+            cropped_img = original_img[0:h//2, 0:w]
         else:
-            # If no detection, use original (maybe it's already tight, or model missed it)
-            cropped_img = original_img
+            # Run Inference for standard images
+            original_img = cv2.imread(img_path)
+            results = model(img_path, verbose=False)
+            
+            cropped_img = None
+            
+            # Get highest confidence box
+            best_conf = -1
+            best_box = None
+            
+            for r in results:
+                boxes = r.boxes
+                for box in boxes:
+                    conf = float(box.conf[0])
+                    if conf > best_conf:
+                        best_conf = conf
+                        best_box = box.xyxy[0].cpu().numpy() # [x1, y1, x2, y2]
+            
+            if best_box is not None:
+                x1, y1, x2, y2 = map(int, best_box)
+                # Clip to image bounds
+                h, w = original_img.shape[:2]
+                x1 = max(0, x1)
+                y1 = max(0, y1)
+                x2 = min(w, x2)
+                y2 = min(h, y2)
+                
+                # Crop
+                cropped_img = original_img[y1:y2, x1:x2]
+                
+                # Fallback if crop is empty
+                if cropped_img.size == 0:
+                    cropped_img = original_img
+            else:
+                # If no detection, use original (maybe it's already tight, or model missed it)
+                cropped_img = original_img
             
         # Save Cropped Image
         save_path = os.path.join(OUTPUT_IMAGES_DIR, filename)
