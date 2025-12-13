@@ -1,0 +1,98 @@
+import os
+import cv2
+import pandas as pd
+import numpy as np
+from tqdm import tqdm
+from ultralytics import YOLO
+
+# Paths
+BASE_DIR = r"d:\File Gaung\Kuliah TIF UB\Semester 5\Deep Learning\Projek Akhir"
+DATASET_DIR = os.path.join(BASE_DIR, "datasets", "IndonesianLiscenePlateDataset", "plate_text_dataset")
+IMAGES_DIR = os.path.join(DATASET_DIR, "dataset")
+LABEL_FILE = os.path.join(DATASET_DIR, "label.csv")
+
+OUTPUT_DIR = os.path.join(BASE_DIR, "datasets", "plate_text_cropped")
+OUTPUT_IMAGES_DIR = os.path.join(OUTPUT_DIR, "dataset")
+OUTPUT_LABEL_FILE = os.path.join(OUTPUT_DIR, "label.csv")
+
+MODEL_PATH = os.path.join(BASE_DIR, "results", "detection", "yolo11_lpr", "baseline_run7", "weights", "best.pt")
+
+def preprocess_dataset():
+    # Load Model
+    print(f"Loading YOLO model from {MODEL_PATH}...")
+    model = YOLO(MODEL_PATH)
+    
+    # Create Output Dirs
+    os.makedirs(OUTPUT_IMAGES_DIR, exist_ok=True)
+    
+    # Load Labels
+    df = pd.read_csv(LABEL_FILE)
+    print(f"Loaded {len(df)} samples from {LABEL_FILE}")
+    
+    new_data = []
+    
+    print("Preprocessing images (cropping plates)...")
+    for _, row in tqdm(df.iterrows(), total=len(df)):
+        filename = row['filename']
+        label = row['label']
+        
+        img_path = os.path.join(IMAGES_DIR, filename)
+        
+        if not os.path.exists(img_path):
+            continue
+            
+        # Run Inference
+        results = model(img_path, verbose=False)
+        
+        cropped_img = None
+        
+        # Get highest confidence box
+        best_conf = -1
+        best_box = None
+        
+        for r in results:
+            boxes = r.boxes
+            for box in boxes:
+                conf = float(box.conf[0])
+                if conf > best_conf:
+                    best_conf = conf
+                    best_box = box.xyxy[0].cpu().numpy() # [x1, y1, x2, y2]
+        
+        original_img = cv2.imread(img_path)
+        
+        if best_box is not None:
+            x1, y1, x2, y2 = map(int, best_box)
+            # Clip to image bounds
+            h, w = original_img.shape[:2]
+            x1 = max(0, x1)
+            y1 = max(0, y1)
+            x2 = min(w, x2)
+            y2 = min(h, y2)
+            
+            # Crop
+            cropped_img = original_img[y1:y2, x1:x2]
+            
+            # Fallback if crop is empty
+            if cropped_img.size == 0:
+                cropped_img = original_img
+        else:
+            # If no detection, use original (maybe it's already tight, or model missed it)
+            cropped_img = original_img
+            
+        # Save Cropped Image
+        save_path = os.path.join(OUTPUT_IMAGES_DIR, filename)
+        cv2.imwrite(save_path, cropped_img)
+        
+        new_data.append({'filename': filename, 'label': label})
+        
+    # Save New Label CSV
+    new_df = pd.DataFrame(new_data)
+    new_df.to_csv(OUTPUT_LABEL_FILE, index=False)
+    print(f"Saved processed dataset to {OUTPUT_DIR}")
+    print(f"Total samples: {len(new_df)}")
+
+if __name__ == "__main__":
+    if not os.path.exists(MODEL_PATH):
+        print(f"Error: Model not found at {MODEL_PATH}")
+    else:
+        preprocess_dataset()
