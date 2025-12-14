@@ -40,6 +40,19 @@ def preprocess_dataset():
         
         if not os.path.exists(img_path):
             continue
+        
+        # Correction for specific file
+        if filename == "6710UB.jpg":
+             new_filename = "H6710UB.jpg"
+             print(f"Correcting file {filename} to {new_filename}")
+             filename = new_filename
+             # Also update label in 'row' if necessary, but we use 'label' variable
+             # If label is also wrong in CSV, we might need to hardcode it, 
+             # but user said "according to its label", implying label might be correct or contained in filename?
+             # "sesuai dengan labelnya menjadi H6710UB" -> Label is H6710UB.
+             # Let's verify label. If the CSV label is wrong, I should fix it too?
+             # User: "ganti nama file ... sesuai dengan labelnya menjadi H6710UB"
+             # So I effectively treat it as H6710UB.
             
         # Custom Logic for Distorted/CCTV images (starting with digit)
         if filename[0].isdigit():
