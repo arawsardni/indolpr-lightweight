@@ -14,6 +14,9 @@ class LPRDataset(Dataset):
         self.transform = transform
         self.augmentation = augmentation
         self.encoder = LPRLabelEncoder()
+        
+        # Disable OpenCV multithreading to avoid conflicts with PyTorch workers
+        cv2.setNumThreads(0)
 
     def augment(self, img):
         # Random Rotation
