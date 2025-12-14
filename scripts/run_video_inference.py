@@ -144,8 +144,8 @@ if __name__ == "__main__":
     
     # Defaults
     default_video = os.path.join(project_root, "test_video.mp4")
-    default_yolo = os.path.join(project_root, "results/detection/yolo11_lpr/baseline_run7/weights/best.pt")
-    default_lpr = os.path.join(project_root, "models", "lprnet_best.pth")
+    default_yolo = os.path.join(project_root, "artifacts", "yolo", "best.pt")
+    default_lpr = os.path.join(project_root, "artifacts", "lprnet", "lprnet_best.pt")
     default_output = os.path.join(project_root, "output.mp4")
 
     parser = argparse.ArgumentParser()
