@@ -46,6 +46,7 @@ def preprocess_dataset():
              new_filename = "H6710UB.jpg"
              print(f"Correcting file {filename} to {new_filename}")
              filename = new_filename
+             label = "H6710UB"
              # Also update label in 'row' if necessary, but we use 'label' variable
              # If label is also wrong in CSV, we might need to hardcode it, 
              # but user said "according to its label", implying label might be correct or contained in filename?
