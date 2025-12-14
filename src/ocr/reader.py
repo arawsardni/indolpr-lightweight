@@ -42,6 +42,10 @@ class LPRDataset(Dataset):
             noise = np.random.normal(0, 15, img.shape).astype(np.uint8)
             img = cv2.add(img, noise)
             
+        # Random Invert (For Black vs White plates)
+        if np.random.random() < 0.5:
+            img = cv2.bitwise_not(img)
+            
         return img
 
     def __len__(self):
