@@ -12,14 +12,6 @@ __pycache__/
 .ipynb_checkpoints/
 
 # ===============================
-# Dataset (TIDAK DI-UPLOAD)
-# ===============================
-datasets/
-data/
-yolo_dataset/
-datasets/preprocessed/yolo_dataset/
-
-# ===============================
 # Training cache / temporary
 # ===============================
 runs/
