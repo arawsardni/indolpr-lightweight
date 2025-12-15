@@ -1,6 +1,6 @@
 names:
 - license_plate
 nc: 1
-path: /home/gaungtaqwa/indolpr-lightweight/datasets/yolo_dataset
+path: /home/gaungtaqwa/indolpr-lightweight/datasets/preprocessed/yolo_dataset
 train: images/train
 val: images/val

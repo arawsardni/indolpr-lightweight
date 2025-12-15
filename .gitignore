@@ -12,6 +12,11 @@ __pycache__/
 .ipynb_checkpoints/
 
 # ===============================
+# Dataset (DO NOT UPLOAD)
+# ===============================
+datasets/preprocessed/yolo_dataset/
+
+# ===============================
 # Media files
 # ===============================
 *.mp4
