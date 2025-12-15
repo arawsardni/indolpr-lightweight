@@ -6,8 +6,9 @@ from tqdm import tqdm
 from ultralytics import YOLO
 
 # Paths
-BASE_DIR = r"d:\File Gaung\Kuliah TIF UB\Semester 5\Deep Learning\Projek Akhir"
-DATASET_DIR = os.path.join(BASE_DIR, "datasets", "IndonesianLiscenePlateDataset", "plate_text_dataset")
+BASE_DIR = r"../" # Change this to your project root directory
+
+DATASET_DIR = os.path.join(BASE_DIR, "datasets", "raw", "plate_text_dataset")
 IMAGES_DIR = os.path.join(DATASET_DIR, "dataset")
 LABEL_FILE = os.path.join(DATASET_DIR, "label.csv")
 
@@ -47,13 +48,6 @@ def preprocess_dataset():
              print(f"Correcting file {filename} to {new_filename}")
              filename = new_filename
              label = "H6710UB"
-             # Also update label in 'row' if necessary, but we use 'label' variable
-             # If label is also wrong in CSV, we might need to hardcode it, 
-             # but user said "according to its label", implying label might be correct or contained in filename?
-             # "sesuai dengan labelnya menjadi H6710UB" -> Label is H6710UB.
-             # Let's verify label. If the CSV label is wrong, I should fix it too?
-             # User: "ganti nama file ... sesuai dengan labelnya menjadi H6710UB"
-             # So I effectively treat it as H6710UB.
             
         # Custom Logic for Distorted/CCTV images (starting with digit)
         if filename[0].isdigit():

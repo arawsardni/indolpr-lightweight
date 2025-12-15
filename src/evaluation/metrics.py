@@ -28,7 +28,7 @@ def compute_ocr_metrics(preds, targets):
     
     Returns:
         dict: {
-            'seq_acc': Sequence Level Accuracy,
+            'seq_acc': Sequence Level/Greedy Accuracy,
             'char_acc': Character Level Accuracy (1 - CER),
             'avg_edit_dist': Average Levenshtein Distance
         }
@@ -46,9 +46,6 @@ def compute_ocr_metrics(preds, targets):
         dist = levenshtein(pred, target)
         total_edit_dist += dist
         
-        # Char accuracy calc is a bit nuanced, often 1 - (dist / max(len(pred), len(target)))
-        # Or commonly CER = dist / len(target)
-        # Let's track CER terms
         total_chars += len(target)
         
     seq_acc = correct_seq / total_seq if total_seq > 0 else 0
