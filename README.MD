@@ -17,14 +17,13 @@ This repository contains an end-to-end pipeline for Indonesian license plate rec
 ```
 ├── artifacts/          # Saved model weights (YOLO, LPRNet)
 ├── datasets/           # Raw and preprocessed datasets
-├── models/             # Model architectures and weights
+├── pretrained-models/  # Pretrained models to be fine tuned
 ├── notebooks/          # Exploratory Data Analysis and Training Notebooks
+├── results/            # Currently contains YOLO training result
 ├── scripts/            # Utility scripts for inference, preprocessing, etc.
 ├── src/                # Source code for core modules
-│   ├── detection/      # Detection logic
 │   ├── ocr/            # LPRNet architecture and decoding logic
 │   └── evaluation/     # Metrics and evaluation tools
-├── output.mp4          # Example inference result (generated)
 └── requirements.txt    # Python dependencies
 ```
 
